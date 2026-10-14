@@ -1,0 +1,87 @@
+{
+  "entities": {
+    "Settings": {
+      "title": "Settings",
+      "description": "General system settings for the school management portal",
+      "type": "object",
+      "properties": {
+        "schoolName": {
+          "type": "string",
+          "description": "Name of the school",
+          "maxLength": 200
+        },
+        "affiliation": {
+          "type": "string",
+          "description": "Affiliation or governing organization",
+          "maxLength": 200
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "School logo URL or data image",
+          "maxLength": 500000
+        },
+        "bgUrl": {
+          "type": "string",
+          "description": "Background image URL or data image for portal",
+          "maxLength": 500000
+        },
+        "columns": {
+          "type": "number",
+          "description": "Number of columns to display cards on desktop/iPad"
+        },
+        "adminPin": {
+          "type": "string",
+          "description": "4-digit PIN for admin portal access",
+          "maxLength": 10
+        }
+      },
+      "required": ["schoolName", "affiliation", "columns", "adminPin"]
+    },
+    "Card": {
+      "title": "Card",
+      "description": "School system card link",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Name of the school management system",
+          "maxLength": 200
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Cover image URL or data image for the card",
+          "maxLength": 500000
+        },
+        "url": {
+          "type": "string",
+          "description": "Destination URL to open",
+          "maxLength": 1000
+        },
+        "order": {
+          "type": "number",
+          "description": "Display order index"
+        },
+        "category": {
+          "type": "string",
+          "description": "Optional category or department",
+          "maxLength": 100
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether the card is active"
+        }
+      },
+      "required": ["title", "url", "order"]
+    }
+  },
+  "firestore": {
+    "/settings/{docId}": {
+      "schema": "#/entities/Settings",
+      "description": "System settings for school portal"
+    },
+    "/cards/{cardId}": {
+      "schema": "#/entities/Card",
+      "description": "Collection of school management system link cards"
+    }
+  }
+}

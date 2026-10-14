@@ -1,0 +1,6 @@
+{
+  "name": "รวมลิงค์ระบบบริหารสถานศึกษา",
+  "description": "ระบบรวมลิงค์ระบบบริหารสถานศึกษา รูปแบบการ์ดสไตล์ iPad พร้อมระบบจัดการสำหรับผู้ดูแลระบบ",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
