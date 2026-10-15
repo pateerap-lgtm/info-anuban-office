@@ -3,7 +3,10 @@ export interface SchoolSettings {
   affiliation: string;
   logoUrl: string;
   bgUrl: string;
-  columns: number; // e.g. 2, 3, 4, 5, 6
+  columns?: number; // legacy fallback
+  columnsPC?: number; // จำนวนคอลัมน์บน PC (Desktop)
+  columnsTablet?: number; // จำนวนคอลัมน์บน Tablet (iPad)
+  columnsMobile?: number; // จำนวนคอลัมน์บน Mobile (สมาร์ตโฟน)
   adminPin: string; // 4-digit PIN
   updatedAt?: string;
 }

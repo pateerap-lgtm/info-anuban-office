@@ -21,6 +21,9 @@ export const DEFAULT_SETTINGS: SchoolSettings = {
   logoUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=300&q=80',
   bgUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80',
   columns: 4,
+  columnsPC: 4,
+  columnsTablet: 3,
+  columnsMobile: 2,
   adminPin: '1234',
   updatedAt: new Date().toISOString(),
 };

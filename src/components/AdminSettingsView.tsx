@@ -12,6 +12,11 @@ import {
   AlertCircle,
   Eye,
   Sparkles,
+  Monitor,
+  Tablet,
+  Smartphone,
+  Laptop,
+  Check,
 } from 'lucide-react';
 import { SchoolSettings } from '../types';
 
@@ -28,7 +33,12 @@ export const AdminSettingsView: React.FC<AdminSettingsViewProps> = ({
   const [affiliation, setAffiliation] = useState(settings.affiliation || '');
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl || '');
   const [bgUrl, setBgUrl] = useState(settings.bgUrl || '');
-  const [columns, setColumns] = useState<number>(settings.columns || 4);
+  
+  // Per-device column states
+  const [columnsPC, setColumnsPC] = useState<number>(settings.columnsPC ?? settings.columns ?? 4);
+  const [columnsTablet, setColumnsTablet] = useState<number>(settings.columnsTablet ?? 3);
+  const [columnsMobile, setColumnsMobile] = useState<number>(settings.columnsMobile ?? 2);
+  const [simulatedDevice, setSimulatedDevice] = useState<'pc' | 'tablet' | 'mobile'>('pc');
 
   // PIN settings
   const [currentPin, setCurrentPin] = useState('');
@@ -171,7 +181,10 @@ export const AdminSettingsView: React.FC<AdminSettingsViewProps> = ({
         affiliation: affiliation.trim(),
         logoUrl: logoUrl.trim(),
         bgUrl: bgUrl.trim(),
-        columns: Number(columns),
+        columns: Number(columnsPC), // fallback
+        columnsPC: Number(columnsPC),
+        columnsTablet: Number(columnsTablet),
+        columnsMobile: Number(columnsMobile),
         adminPin: finalPin,
         updatedAt: new Date().toISOString(),
       };
@@ -258,52 +271,299 @@ export const AdminSettingsView: React.FC<AdminSettingsViewProps> = ({
           </div>
         </div>
 
-        {/* Section 2: Columns Setting for Homepage Cards */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200/80">
-          <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
-            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <Columns3 className="w-5 h-5 text-[#0C7C82]" />
-              <span>ตั้งค่าจำนวนคอลัมน์การแสดง Card ในหน้าแรก</span>
-            </h3>
-            <span className="px-3 py-1 bg-teal-50 text-[#0C7C82] text-xs font-bold rounded-full border border-teal-100">
-              ปัจจุบัน: {columns} คอลัมน์
-            </span>
+        {/* Section 2: Columns Setting for Homepage Cards - Separated for PC, Tablet, Mobile */}
+        <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-sm border border-slate-200/80 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Columns3 className="w-5 h-5 text-[#0C7C82]" />
+                <span>ตั้งค่าจำนวนคอลัมน์การแสดง Card ในหน้าแรก (แยก 3 อุปกรณ์)</span>
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                ระบุจำนวนคอลัมน์ในแต่ละแถวแยกตามอุปกรณ์ได้อย่างอิสระ: PC, Tablet และ Mobile
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 self-start sm:self-auto">
+              <span className="px-2.5 py-1 bg-teal-50 text-[#0C7C82] text-[11px] font-bold rounded-lg border border-teal-100">
+                PC: {columnsPC}
+              </span>
+              <span className="px-2.5 py-1 bg-teal-50 text-[#0C7C82] text-[11px] font-bold rounded-lg border border-teal-100">
+                Tablet: {columnsTablet}
+              </span>
+              <span className="px-2.5 py-1 bg-teal-50 text-[#0C7C82] text-[11px] font-bold rounded-lg border border-teal-100">
+                Mobile: {columnsMobile}
+              </span>
+            </div>
           </div>
 
-          <p className="text-xs text-slate-500 mb-4">
-            กำหนดจำนวนคอลัมน์การ์ดสี่เหลี่ยมจัตุรัสบนหน้าจอ iPad / Desktop เพื่อความสวยงามสมดุล
-          </p>
+          {/* 3 Devices Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            {/* 1. PC Setting Card */}
+            <div className="p-5 rounded-2xl bg-slate-50/90 border border-slate-200/90 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl bg-teal-100 text-[#0C7C82] flex items-center justify-center shadow-xs">
+                      <Monitor className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800">1. คอมพิวเตอร์ (PC)</h4>
+                      <span className="text-[10px] text-slate-500 font-medium">Desktop & โน้ตบุ๊ก (≥ 1024px)</span>
+                    </div>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-teal-600 text-white font-bold shadow-xs">
+                    {columnsPC} คอลัมน์
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mb-3">
+                  จำนวนคอลัมน์ต่อแถวบนหน้าจอคอมพิวเตอร์ขนาดใหญ่
+                </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {[2, 3, 4, 5, 6].map((cols) => (
-              <button
-                key={cols}
-                type="button"
-                onClick={() => setColumns(cols)}
-                className={`p-4 rounded-2xl border-2 flex flex-col items-center justify-center transition-all cursor-pointer ${
-                  columns === cols
-                    ? 'border-[#0C7C82] bg-teal-50/50 shadow-md shadow-teal-500/10'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
-                }`}
-              >
-                <span className="text-xl font-bold text-slate-800 mb-1">{cols}</span>
-                <span className="text-xs font-medium text-slate-500">คอลัมน์</span>
-                {/* Visual miniature representation */}
-                <div
-                  className="mt-2 grid gap-1 w-full max-w-[60px]"
-                  style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
-                >
-                  {Array.from({ length: cols }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-2 rounded-xs ${
-                        columns === cols ? 'bg-[#0C7C82]' : 'bg-slate-300'
+                {/* PC Columns Options: 2, 3, 4, 5, 6, 7, 8 */}
+                <div className="grid grid-cols-4 sm:grid-cols-4 gap-2">
+                  {[2, 3, 4, 5, 6, 7, 8].map((cols) => (
+                    <button
+                      key={cols}
+                      type="button"
+                      onClick={() => setColumnsPC(cols)}
+                      className={`py-2 px-1 rounded-xl border-2 flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        columnsPC === cols
+                          ? 'border-[#0C7C82] bg-teal-50 shadow-sm text-[#0C7C82]'
+                          : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
                       }`}
-                    />
+                    >
+                      <span className="text-base font-bold">{cols}</span>
+                      <span className="text-[9px] font-medium opacity-75">คอลัมน์</span>
+                      {/* Mini bar preview */}
+                      <div
+                        className="mt-1.5 grid gap-0.5 w-full max-w-[36px]"
+                        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+                      >
+                        {Array.from({ length: cols }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-1.5 rounded-xs ${
+                              columnsPC === cols ? 'bg-[#0C7C82]' : 'bg-slate-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </button>
                   ))}
                 </div>
-              </button>
-            ))}
+              </div>
+            </div>
+
+            {/* 2. Tablet Setting Card */}
+            <div className="p-5 rounded-2xl bg-slate-50/90 border border-slate-200/90 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl bg-teal-100 text-[#0C7C82] flex items-center justify-center shadow-xs">
+                      <Tablet className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800">2. แท็บเล็ต (Tablet)</h4>
+                      <span className="text-[10px] text-slate-500 font-medium">iPad & แท็บเล็ต (640-1023px)</span>
+                    </div>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-teal-600 text-white font-bold shadow-xs">
+                    {columnsTablet} คอลัมน์
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mb-3">
+                  จำนวนคอลัมน์ต่อแถวบนหน้าจอแท็บเล็ตสไตล์ iPad
+                </p>
+
+                {/* Tablet Columns Options: 2, 3, 4, 5, 6 */}
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                  {[2, 3, 4, 5, 6].map((cols) => (
+                    <button
+                      key={cols}
+                      type="button"
+                      onClick={() => setColumnsTablet(cols)}
+                      className={`py-2 px-1 rounded-xl border-2 flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        columnsTablet === cols
+                          ? 'border-[#0C7C82] bg-teal-50 shadow-sm text-[#0C7C82]'
+                          : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                      }`}
+                    >
+                      <span className="text-base font-bold">{cols}</span>
+                      <span className="text-[9px] font-medium opacity-75">คอลัมน์</span>
+                      {/* Mini bar preview */}
+                      <div
+                        className="mt-1.5 grid gap-0.5 w-full max-w-[36px]"
+                        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+                      >
+                        {Array.from({ length: cols }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-1.5 rounded-xs ${
+                              columnsTablet === cols ? 'bg-[#0C7C82]' : 'bg-slate-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Mobile Setting Card */}
+            <div className="p-5 rounded-2xl bg-slate-50/90 border border-slate-200/90 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl bg-teal-100 text-[#0C7C82] flex items-center justify-center shadow-xs">
+                      <Smartphone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800">3. โทรศัพท์มือถือ (Mobile)</h4>
+                      <span className="text-[10px] text-slate-500 font-medium">สมาร์ตโฟนทั่วไป (&lt; 640px)</span>
+                    </div>
+                  </div>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-teal-600 text-white font-bold shadow-xs">
+                    {columnsMobile} คอลัมน์
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mb-3">
+                  จำนวนคอลัมน์ต่อแถวบนหน้าจอมือถือ
+                </p>
+
+                {/* Mobile Columns Options: 1, 2, 3, 4 */}
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((cols) => (
+                    <button
+                      key={cols}
+                      type="button"
+                      onClick={() => setColumnsMobile(cols)}
+                      className={`py-2 px-1 rounded-xl border-2 flex flex-col items-center justify-center transition-all cursor-pointer ${
+                        columnsMobile === cols
+                          ? 'border-[#0C7C82] bg-teal-50 shadow-sm text-[#0C7C82]'
+                          : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                      }`}
+                    >
+                      <span className="text-base font-bold">{cols}</span>
+                      <span className="text-[9px] font-medium opacity-75">คอลัมน์</span>
+                      {/* Mini bar preview */}
+                      <div
+                        className="mt-1.5 grid gap-0.5 w-full max-w-[36px]"
+                        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+                      >
+                        {Array.from({ length: cols }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-1.5 rounded-xs ${
+                              columnsMobile === cols ? 'bg-[#0C7C82]' : 'bg-slate-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Layout Simulator */}
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#35B4B0]" />
+                <span className="text-xs font-bold tracking-wide">
+                  จำลองการจัดเรียง Card ตามอุปกรณ์ (Live Simulation Preview)
+                </span>
+              </div>
+
+              {/* Device Tabs */}
+              <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/80">
+                <button
+                  type="button"
+                  onClick={() => setSimulatedDevice('pc')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    simulatedDevice === 'pc'
+                      ? 'bg-[#0C7C82] text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                  <span>PC ({columnsPC})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSimulatedDevice('tablet')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    simulatedDevice === 'tablet'
+                      ? 'bg-[#0C7C82] text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Tablet className="w-3.5 h-3.5" />
+                  <span>Tablet ({columnsTablet})</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSimulatedDevice('mobile')}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    simulatedDevice === 'mobile'
+                      ? 'bg-[#0C7C82] text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                  <span>Mobile ({columnsMobile})</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Simulated Grid Box */}
+            <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-700/50 flex flex-col items-center">
+              <div className="text-[11px] text-teal-300 font-medium mb-3">
+                {simulatedDevice === 'pc' && `มุมมองจอคอมพิวเตอร์ (PC): แสดง ${columnsPC} คอลัมน์ต่อแถว`}
+                {simulatedDevice === 'tablet' && `มุมมองแท็บเล็ต (Tablet / iPad): แสดง ${columnsTablet} คอลัมน์ต่อแถว`}
+                {simulatedDevice === 'mobile' && `มุมมองโทรศัพท์มือถือ (Mobile): แสดง ${columnsMobile} คอลัมน์ต่อแถว`}
+              </div>
+
+              <div
+                className="grid gap-2.5 w-full transition-all duration-300"
+                style={{
+                  maxWidth:
+                    simulatedDevice === 'pc'
+                      ? '100%'
+                      : simulatedDevice === 'tablet'
+                      ? '540px'
+                      : '280px',
+                  gridTemplateColumns: `repeat(${
+                    simulatedDevice === 'pc'
+                      ? columnsPC
+                      : simulatedDevice === 'tablet'
+                      ? columnsTablet
+                      : columnsMobile
+                  }, minmax(0, 1fr))`,
+                }}
+              >
+                {Array.from({
+                  length:
+                    (simulatedDevice === 'pc'
+                      ? columnsPC
+                      : simulatedDevice === 'tablet'
+                      ? columnsTablet
+                      : columnsMobile) * 2,
+                }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="aspect-square rounded-xl bg-gradient-to-tr from-[#0C7C82]/80 to-[#35B4B0]/80 border border-teal-300/30 flex flex-col items-center justify-center p-1 text-center shadow-xs"
+                  >
+                    <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center mb-1">
+                      <Sparkles className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-[10px] font-bold text-white">Card {idx + 1}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

@@ -2,25 +2,54 @@ import React from 'react';
 
 interface SkeletonGridProps {
   columns?: number;
+  columnsPC?: number;
+  columnsTablet?: number;
+  columnsMobile?: number;
   count?: number;
 }
 
-export const SkeletonGrid: React.FC<SkeletonGridProps> = ({ columns = 4, count = 8 }) => {
-  // Compute column class
-  const getColClass = (cols: number) => {
-    switch (cols) {
-      case 2:
-        return 'grid-cols-2';
-      case 3:
-        return 'grid-cols-2 sm:grid-cols-3';
-      case 4:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4';
-      case 5:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5';
-      case 6:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6';
-      default:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4';
+export const SkeletonGrid: React.FC<SkeletonGridProps> = ({
+  columns = 4,
+  columnsPC,
+  columnsTablet,
+  columnsMobile,
+  count = 8,
+}) => {
+  const pc = columnsPC ?? columns ?? 4;
+  const tablet = columnsTablet ?? 3;
+  const mobile = columnsMobile ?? 2;
+
+  const getMobileCol = (c: number) => {
+    switch (c) {
+      case 1: return 'grid-cols-1';
+      case 2: return 'grid-cols-2';
+      case 3: return 'grid-cols-3';
+      case 4: return 'grid-cols-4';
+      default: return 'grid-cols-2';
+    }
+  };
+
+  const getTabletCol = (c: number) => {
+    switch (c) {
+      case 2: return 'sm:grid-cols-2 md:grid-cols-2';
+      case 3: return 'sm:grid-cols-3 md:grid-cols-3';
+      case 4: return 'sm:grid-cols-4 md:grid-cols-4';
+      case 5: return 'sm:grid-cols-5 md:grid-cols-5';
+      case 6: return 'sm:grid-cols-6 md:grid-cols-6';
+      default: return 'sm:grid-cols-3 md:grid-cols-3';
+    }
+  };
+
+  const getPCCol = (c: number) => {
+    switch (c) {
+      case 2: return 'lg:grid-cols-2';
+      case 3: return 'lg:grid-cols-3';
+      case 4: return 'lg:grid-cols-4';
+      case 5: return 'lg:grid-cols-5';
+      case 6: return 'lg:grid-cols-6';
+      case 7: return 'lg:grid-cols-7';
+      case 8: return 'lg:grid-cols-8';
+      default: return 'lg:grid-cols-4';
     }
   };
 
@@ -34,7 +63,7 @@ export const SkeletonGrid: React.FC<SkeletonGridProps> = ({ columns = 4, count =
       </div>
 
       {/* Grid of Square Cards Skeleton */}
-      <div className={`grid ${getColClass(columns)} gap-4 sm:gap-6`}>
+      <div className={`grid ${getMobileCol(mobile)} ${getTabletCol(tablet)} ${getPCCol(pc)} gap-4 sm:gap-6`}>
         {Array.from({ length: count }).map((_, index) => (
           <div
             key={index}

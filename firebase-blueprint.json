@@ -27,7 +27,19 @@
         },
         "columns": {
           "type": "number",
-          "description": "Number of columns to display cards on desktop/iPad"
+          "description": "Legacy fallback number of columns"
+        },
+        "columnsPC": {
+          "type": "number",
+          "description": "Number of columns to display on PC / Desktop"
+        },
+        "columnsTablet": {
+          "type": "number",
+          "description": "Number of columns to display on Tablet / iPad"
+        },
+        "columnsMobile": {
+          "type": "number",
+          "description": "Number of columns to display on Mobile / Smartphone"
         },
         "adminPin": {
           "type": "string",
@@ -35,7 +47,7 @@
           "maxLength": 10
         }
       },
-      "required": ["schoolName", "affiliation", "columns", "adminPin"]
+      "required": ["schoolName", "affiliation", "adminPin"]
     },
     "Card": {
       "title": "Card",

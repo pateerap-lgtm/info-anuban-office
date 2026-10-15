@@ -394,7 +394,13 @@ export default function App() {
       {/* Main View Switcher: Admin Dashboard vs Public Portal */}
       {isLoading ? (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0C7C82] via-[#26A69A] to-[#4A2C6D]">
-          <SkeletonGrid columns={settings.columns || 4} count={8} />
+          <SkeletonGrid
+            columns={settings.columns || 4}
+            columnsPC={settings.columnsPC}
+            columnsTablet={settings.columnsTablet}
+            columnsMobile={settings.columnsMobile}
+            count={8}
+          />
         </div>
       ) : isAdminLoggedIn ? (
         /* Admin Dashboard View */

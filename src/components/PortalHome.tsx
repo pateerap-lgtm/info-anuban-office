@@ -23,21 +23,55 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
     .filter((c) => c.isActive !== false)
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-  // Compute responsive Tailwind grid class based on settings.columns
-  const getGridColumnsClass = (cols: number) => {
+  // Columns per device: PC, Tablet, Mobile
+  const pcCols = settings.columnsPC ?? settings.columns ?? 4;
+  const tabletCols = settings.columnsTablet ?? 3;
+  const mobileCols = settings.columnsMobile ?? 2;
+
+  const getMobileColClass = (cols: number) => {
     switch (cols) {
-      case 2:
-        return 'grid-cols-2 max-w-2xl';
-      case 3:
-        return 'grid-cols-2 sm:grid-cols-3 max-w-3xl';
-      case 4:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 max-w-4xl';
-      case 5:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 max-w-5xl';
-      case 6:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 max-w-6xl';
-      default:
-        return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 max-w-4xl';
+      case 1: return 'grid-cols-1';
+      case 2: return 'grid-cols-2';
+      case 3: return 'grid-cols-3';
+      case 4: return 'grid-cols-4';
+      default: return 'grid-cols-2';
+    }
+  };
+
+  const getTabletColClass = (cols: number) => {
+    switch (cols) {
+      case 2: return 'sm:grid-cols-2 md:grid-cols-2';
+      case 3: return 'sm:grid-cols-3 md:grid-cols-3';
+      case 4: return 'sm:grid-cols-4 md:grid-cols-4';
+      case 5: return 'sm:grid-cols-5 md:grid-cols-5';
+      case 6: return 'sm:grid-cols-6 md:grid-cols-6';
+      default: return 'sm:grid-cols-3 md:grid-cols-3';
+    }
+  };
+
+  const getPCColClass = (cols: number) => {
+    switch (cols) {
+      case 2: return 'lg:grid-cols-2';
+      case 3: return 'lg:grid-cols-3';
+      case 4: return 'lg:grid-cols-4';
+      case 5: return 'lg:grid-cols-5';
+      case 6: return 'lg:grid-cols-6';
+      case 7: return 'lg:grid-cols-7';
+      case 8: return 'lg:grid-cols-8';
+      default: return 'lg:grid-cols-4';
+    }
+  };
+
+  const getMaxWidthClass = (cols: number) => {
+    switch (cols) {
+      case 2: return 'max-w-xl';
+      case 3: return 'max-w-3xl';
+      case 4: return 'max-w-5xl';
+      case 5: return 'max-w-6xl';
+      case 6: return 'max-w-7xl';
+      case 7: return 'max-w-7xl';
+      case 8: return 'max-w-[96rem]';
+      default: return 'max-w-5xl';
     }
   };
 
@@ -102,10 +136,10 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
           </p>
         </header>
 
-        {/* iPad-style App Cards Grid */}
-        <main className={`w-full mx-auto ${getGridColumnsClass(settings.columns || 4)}`}>
+        {/* iPad/Tablet/PC App Cards Grid */}
+        <main className={`w-full mx-auto ${getMaxWidthClass(pcCols)}`}>
           <div
-            className={`grid ${getGridColumnsClass(settings.columns || 4).split(' ')[0]} gap-4 sm:gap-6 md:gap-8 justify-center`}
+            className={`grid ${getMobileColClass(mobileCols)} ${getTabletColClass(tabletCols)} ${getPCColClass(pcCols)} gap-4 sm:gap-6 md:gap-8 justify-center`}
           >
             {activeCards.map((card) => {
               const isHovered = hoveredCardId === card.id;
