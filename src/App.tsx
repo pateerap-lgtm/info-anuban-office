@@ -31,7 +31,7 @@ import confetti from 'canvas-confetti';
 export default function App() {
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SETTINGS);
   const [cards, setCards] = useState<SchoolCardItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isOperating, setIsOperating] = useState<boolean>(false);
 
   // Admin states
@@ -80,22 +80,28 @@ export default function App() {
 
     const initData = async () => {
       try {
-        // Clean up any previously seeded sample cards (card-1 to card-8) from the database
-        for (let i = 1; i <= 8; i++) {
-          try {
-            await deleteDoc(doc(db, 'cards', `card-${i}`));
-          } catch (e) {
-            // ignore if not exists
-          }
-        }
-
         // 1. Settings listener
         const settingsDocRef = doc(db, 'settings', 'general');
         unsubSettings = onSnapshot(
           settingsDocRef,
           async (snapshot) => {
             if (snapshot.exists()) {
-              setSettings(snapshot.data() as SchoolSettings);
+              const data = snapshot.data() as SchoolSettings;
+              if (data.schoolName === 'โรงเรียนอนุบาลศึกษาพัฒนา' || !data.schoolName) {
+                // Clean up remote document to empty name immediately
+                data.schoolName = '';
+                data.affiliation = '';
+                try {
+                  await setDoc(settingsDocRef, {
+                    ...data,
+                    schoolName: '',
+                    affiliation: '',
+                  });
+                } catch (e) {
+                  // ignore write error if offline or rules
+                }
+              }
+              setSettings(data);
             } else {
               // Seed initial default settings if document doesn't exist yet
               try {
