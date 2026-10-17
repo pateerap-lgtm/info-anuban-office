@@ -10,67 +10,14 @@ interface PortalHomeProps {
   isLoading?: boolean;
 }
 
-// Card component memoized for performance
-const CardItem = React.memo(({ card, onCardClick }: { card: SchoolCardItem, onCardClick: (url: string) => void }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  return (
-    <div
-      className="flex flex-col items-center"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <button
-        type="button"
-        onClick={() => onCardClick(card.url)}
-        className="relative w-full aspect-square rounded-3xl sm:rounded-4xl p-0 overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-teal-400/30 transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.03] active:scale-95 cursor-pointer border border-white/40 bg-white/20 backdrop-blur-md group"
-        aria-label={card.title}
-      >
-        <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/40 opacity-70 group-hover:opacity-90 pointer-events-none transition-opacity z-10" />
-        {card.imageUrl ? (
-          <img
-            src={card.imageUrl}
-            alt={card.title}
-            loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          <div
-            className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-white"
-            style={{ backgroundColor: card.bgColor || '#0C7C82' }}
-          >
-            <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center mb-2">
-              <ExternalLink className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-xs sm:text-sm leading-tight drop-shadow-sm line-clamp-3">
-              {card.title}
-            </span>
-          </div>
-        )}
-        <div
-          className={`absolute bottom-2 right-2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center transition-all duration-200 ${
-            isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-          }`}
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-        </div>
-      </button>
-      <div className="mt-2 text-center max-w-[120px] sm:max-w-[140px]">
-        <span className="text-xs sm:text-sm font-medium text-white drop-shadow-md line-clamp-1 group-hover:line-clamp-none transition-all">
-          {card.title}
-        </span>
-      </div>
-    </div>
-  );
-});
-
-CardItem.displayName = 'CardItem';
-
 export const PortalHome: React.FC<PortalHomeProps> = ({
   settings,
   cards,
   onOpenPinModal,
   isLoading = false,
 }) => {
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
+
   // Filter only active cards, sorted by order
   const activeCards = cards
     .filter((c) => c.isActive !== false)
@@ -136,21 +83,27 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
 
   return (
     <div className="relative min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-[#35B4B0] selection:text-white">
+      {/* Background Image Layer (Behind cards, retrieved from settings) */}
       {settings.bgUrl ? (
         <div
           className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 filter brightness-95"
           style={{ backgroundImage: `url(${settings.bgUrl})` }}
         >
+          {/* Subtle translucent gradient overlay for maximum readability and iPad glassmorphism look */}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-teal-950/30 to-slate-950/60 backdrop-blur-[2px]" />
         </div>
       ) : (
         <div className="fixed inset-0 z-0 bg-gradient-to-br from-[#0C7C82] via-[#26A69A] to-[#4A2C6D]" />
       )}
 
+      {/* Dynamic Ambient Canvas Bokeh / Particle Background */}
       <CanvasBackground opacity={0.45} />
 
+      {/* Main Container simulating an iPad Tablet Screen */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-between px-4 sm:px-6 py-8 md:py-12 w-full">
+        {/* Header Section */}
         <header className="w-full max-w-4xl mx-auto flex flex-col items-center text-center animate-fade-in mb-8 md:mb-12">
+          {/* School Logo */}
           <div className="relative mb-4 group">
             <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-2 bg-white/85 backdrop-blur-xl shadow-2xl border-2 border-white/60 flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
               {settings.logoUrl ? (
@@ -168,9 +121,13 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
               <Sparkles className="w-3.5 h-3.5" />
             </div>
           </div>
+
+          {/* Title: รวมลิงค์ระบบบริหารสถานศึกษา */}
           <div className="inline-block px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs sm:text-sm font-semibold tracking-wide uppercase mb-3 shadow-sm">
             รวมลิงค์ระบบบริหารสถานศึกษา
           </div>
+
+          {/* School Name & Affiliation */}
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white drop-shadow-md tracking-tight mb-2">
             {settings.schoolName || 'โรงเรียนอนุบาลศึกษาพัฒนา'}
           </h1>
@@ -179,13 +136,73 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
           </p>
         </header>
 
+        {/* iPad/Tablet/PC App Cards Grid */}
         <main className={`w-full mx-auto ${getMaxWidthClass(pcCols)}`}>
           <div
             className={`grid ${getMobileColClass(mobileCols)} ${getTabletColClass(tabletCols)} ${getPCColClass(pcCols)} gap-4 sm:gap-6 md:gap-8 justify-center`}
           >
-            {activeCards.map((card) => (
-              <CardItem key={card.id} card={card} onCardClick={handleCardClick} />
-            ))}
+            {activeCards.map((card) => {
+              const isHovered = hoveredCardId === card.id;
+              return (
+                <div
+                  key={card.id}
+                  className="flex flex-col items-center"
+                  onMouseEnter={() => setHoveredCardId(card.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
+                >
+                  {/* Square Card Button (Like iPad iOS app icon) */}
+                  <button
+                    type="button"
+                    onClick={() => handleCardClick(card.url)}
+                    className="relative w-full aspect-square rounded-3xl sm:rounded-4xl p-0 overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-teal-400/30 transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.03] active:scale-95 cursor-pointer border border-white/40 bg-white/20 backdrop-blur-md group"
+                    aria-label={card.title}
+                  >
+                    {/* Gloss / Shine effect overlay simulating iOS glass icon */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/40 opacity-70 group-hover:opacity-90 pointer-events-none transition-opacity z-10" />
+
+                    {/* Condition: Show image only if available; else show system name */}
+                    {card.imageUrl ? (
+                      <img
+                        src={card.imageUrl}
+                        alt={card.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-white"
+                        style={{
+                          backgroundColor: card.bgColor || '#0C7C82',
+                        }}
+                      >
+                        <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center mb-2">
+                          <ExternalLink className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="font-bold text-xs sm:text-sm leading-tight drop-shadow-sm line-clamp-3">
+                          {card.title}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Interactive External Link indicator badge on hover */}
+                    <div
+                      className={`absolute bottom-2 right-2 z-20 w-7 h-7 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center transition-all duration-200 ${
+                        isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
+                      }`}
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </div>
+                  </button>
+
+                  {/* System title below or tooltip: user specified card displays image only, so we put title subtly below like iOS app label */}
+                  <div className="mt-2 text-center max-w-[120px] sm:max-w-[140px]">
+                    <span className="text-xs sm:text-sm font-medium text-white drop-shadow-md line-clamp-1 group-hover:line-clamp-none transition-all">
+                      {card.title}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {activeCards.length === 0 && !isLoading && (
@@ -198,6 +215,7 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
           )}
         </main>
 
+        {/* Footer */}
         <footer className="w-full max-w-4xl mx-auto mt-12 pt-6 border-t border-white/20 text-center animate-fade-in">
           <p className="text-xs sm:text-sm text-white/90 drop-shadow-sm font-normal">
             รวมลิงค์ระบบบริหารสถานศึกษา {settings.schoolName || ''}
@@ -208,6 +226,7 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
         </footer>
       </div>
 
+      {/* Floating Admin Button at Bottom-Right */}
       <div className="fixed bottom-6 right-6 z-40">
         <button
           type="button"
@@ -217,6 +236,8 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
           aria-label="เข้าระบบผู้ดูแลระบบด้วย PIN 4 หลัก"
         >
           <Shield className="w-6 h-6 stroke-[2.2] transition-transform group-hover:rotate-12" />
+
+          {/* Tooltip on Hover */}
           <span className="absolute right-full mr-3 px-3 py-1.5 rounded-xl bg-slate-900/90 backdrop-blur-md text-white text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg border border-slate-700">
             ระบบผู้ดูแล (PIN 4 หลัก)
           </span>

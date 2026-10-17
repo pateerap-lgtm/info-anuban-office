@@ -31,7 +31,7 @@ import confetti from 'canvas-confetti';
 export default function App() {
   const [settings, setSettings] = useState<SchoolSettings>(DEFAULT_SETTINGS);
   const [cards, setCards] = useState<SchoolCardItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOperating, setIsOperating] = useState<boolean>(false);
 
   // Admin states
@@ -86,22 +86,7 @@ export default function App() {
           settingsDocRef,
           async (snapshot) => {
             if (snapshot.exists()) {
-              const data = snapshot.data() as SchoolSettings;
-              if (data.schoolName === 'โรงเรียนอนุบาลศึกษาพัฒนา' || !data.schoolName) {
-                // Clean up remote document to empty name immediately
-                data.schoolName = '';
-                data.affiliation = '';
-                try {
-                  await setDoc(settingsDocRef, {
-                    ...data,
-                    schoolName: '',
-                    affiliation: '',
-                  });
-                } catch (e) {
-                  // ignore write error if offline or rules
-                }
-              }
-              setSettings(data);
+              setSettings(snapshot.data() as SchoolSettings);
             } else {
               // Seed initial default settings if document doesn't exist yet
               try {
