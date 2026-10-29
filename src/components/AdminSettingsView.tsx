@@ -249,7 +249,7 @@ export const AdminSettingsView: React.FC<AdminSettingsViewProps> = ({
                 type="text"
                 value={schoolName}
                 onChange={(e) => setSchoolName(e.target.value)}
-                placeholder="เช่น โรงเรียนอนุบาลศึกษาพัฒนา"
+                placeholder="เช่น โรงเรียนอนุบาลอนุบาลศรีสุทโธ"
                 className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0C7C82]/30 focus:border-[#0C7C82]"
                 required
               />

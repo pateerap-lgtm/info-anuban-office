@@ -129,10 +129,10 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
 
           {/* School Name & Affiliation */}
           <h1 className="text-2xl sm:text-4xl font-extrabold text-white drop-shadow-md tracking-tight mb-2">
-            {settings.schoolName || 'โรงเรียนอนุบาลศึกษาพัฒนา'}
+            {settings.schoolName || 'โรงเรียนอนุบาลศรีสุทโธ'}
           </h1>
           <p className="text-sm sm:text-base text-teal-100/90 font-medium max-w-xl drop-shadow">
-            {settings.affiliation || 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษา'}
+            {settings.affiliation || 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาประถมศึกษาอุดรธานี เขต 3'}
           </p>
         </header>
 

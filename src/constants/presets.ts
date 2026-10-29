@@ -16,8 +16,8 @@ export const THEME_COLORS = [
 ];
 
 export const DEFAULT_SETTINGS: SchoolSettings = {
-  schoolName: 'โรงเรียนอนุบาลศึกษาพัฒนา',
-  affiliation: 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษา',
+  schoolName: 'โรงเรียนอนุบาลศรีสุทโธ',
+  affiliation: 'สำนักงานเขตพื้นที่การศึกษาประถมศึกษาประถมศึกษาอุดรธานี เขต 3',
   logoUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=300&q=80',
   bgUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1920&q=80',
   columns: 4,
